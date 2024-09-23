@@ -9,32 +9,40 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/time/rate"
 )
 
 type Config struct {
-	URLs            []string      `json:"urls"`
-	CheckInterval   time.Duration `json:"check_interval"`
-	WebhookURL      string        `json:"webhook_url"`
-	LogFile         string        `json:"log_file"`
-	RetryAttempts   int           `json:"retry_attempts"`
-	RetryDelay      time.Duration `json:"retry_delay"`
-	Timeout         time.Duration `json:"timeout"`
-	AlertThreshold  int           `json:"alert_threshold"`
-	RateLimit       rate.Limit    `json:"rate_limit"`
-	RateBurst       int           `json:"rate_burst"`
-	MetricsPort     string        `json:"metrics_port"`
-	HealthCheckPort string        `json:"health_check_port"`
-	TLSCertFile     string        `json:"tls_cert_file"`
-	TLSKeyFile      string        `json:"tls_key_file"`
-	APIPort         string        `json:"api_port"`
+	URLs              []string      `json:"urls"`
+	CheckInterval     time.Duration `json:"check_interval"`
+	WebhookURL        string        `json:"webhook_url"`
+	LogFile           string        `json:"log_file"`
+	RetryAttempts     int           `json:"retry_attempts"`
+	RetryDelay        time.Duration `json:"retry_delay"`
+	Timeout           time.Duration `json:"timeout"`
+	AlertThreshold    int           `json:"alert_threshold"`
+	RateLimit         rate.Limit    `json:"rate_limit"`
+	RateBurst         int           `json:"rate_burst"`
+	MetricsPort       string        `json:"metrics_port"`
+	HealthCheckPort   string        `json:"health_check_port"`
+	TLSCertFile       string        `json:"tls_cert_file"`
+	TLSKeyFile        string        `json:"tls_key_file"`
+	APIPort           string        `json:"api_port"`
+	MaxHistoryEntries int           `json:"max_history_entries"`
 }
 
 func main() {
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Error loading .env file: %v", err)
+	}
+
 	fmt.Printf("Starting monitoring server...\n")
 	config, err := loadConfig()
 	if err != nil {
@@ -63,7 +71,7 @@ func main() {
 
 	monitors := make([]*Monitor, len(config.URLs))
 	for i, url := range config.URLs {
-		monitors[i] = NewMonitor(url, int(config.CheckInterval.Seconds()), config.AlertThreshold, config.RetryAttempts, config.RetryDelay, &http.Client{Timeout: config.Timeout})
+		monitors[i] = NewMonitor(url, config.MaxHistoryEntries, config.RetryAttempts, config.RetryDelay, &http.Client{Timeout: config.Timeout})
 	}
 
 	for _, monitor := range monitors {
@@ -143,21 +151,28 @@ func sendDiscordWebhook(ctx context.Context, message, webhookURL string) error {
 }
 
 func loadConfig() (*Config, error) {
+	checkIntervalStr := os.Getenv("CHECK_INTERVAL_SECONDS")
+	checkInterval, err := strconv.Atoi(checkIntervalStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid CHECK_INTERVAL_SECONDS: %w", err)
+	}
+
 	return &Config{
-		URLs:            []string{"https://example.com", "https://another-example.com"},
-		CheckInterval:   10 * time.Second,
-		WebhookURL:      os.Getenv("DISCORD_WEBHOOK_URL"),
-		LogFile:         "monitoring.log",
-		RetryAttempts:   3,
-		RetryDelay:      5 * time.Second,
-		Timeout:         30 * time.Second,
-		AlertThreshold:  3,
-		RateLimit:       rate.Limit(1),
-		RateBurst:       5,
-		HealthCheckPort: ":8081",
-		TLSCertFile:     "server.crt",
-		TLSKeyFile:      "server.key",
-		APIPort:         ":8080",
+		URLs:              []string{"https://example.com", "https://another-example.com"},
+		CheckInterval:     time.Duration(checkInterval) * time.Second,
+		WebhookURL:        os.Getenv("DISCORD_WEBHOOK_URL"),
+		LogFile:           "monitoring.log",
+		RetryAttempts:     3,
+		RetryDelay:        5 * time.Second,
+		Timeout:           30 * time.Second,
+		AlertThreshold:    3,
+		RateLimit:         rate.Limit(1),
+		RateBurst:         5,
+		HealthCheckPort:   ":8081",
+		TLSCertFile:       "server.crt",
+		TLSKeyFile:        "server.key",
+		APIPort:           ":8080",
+		MaxHistoryEntries: 100,
 	}, nil
 }
 
@@ -208,7 +223,7 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, addr string, limit
 			return
 		}
 
-		w.Header().Set("Access-Control-Allow-Origin", "*") // Add this line
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		type MonitorStatus struct {
 			URL          string  `json:"url"`
@@ -251,7 +266,7 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, addr string, limit
 		}
 
 		// Create a new monitor for the added URL
-		newMonitor := NewMonitor(data.URL, int(config.CheckInterval.Seconds()), config.AlertThreshold, config.RetryAttempts, config.RetryDelay, &http.Client{Timeout: config.Timeout})
+		newMonitor := NewMonitor(data.URL, config.MaxHistoryEntries, config.RetryAttempts, config.RetryDelay, &http.Client{Timeout: config.Timeout})
 		monitors = append(monitors, newMonitor)
 
 		// Start monitoring the new URL

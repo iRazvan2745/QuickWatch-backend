@@ -6,8 +6,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 type Monitor struct {
@@ -27,7 +30,19 @@ type Monitor struct {
 	DowntimeCount     int
 }
 
-func NewMonitor(url string, checkIntervalSeconds int, maxHistory int, retries int, retryDelay time.Duration, client *http.Client) *Monitor {
+func NewMonitor(url string, maxHistory int, retries int, retryDelay time.Duration, client *http.Client) *Monitor {
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Error loading .env file: %v", err)
+	}
+
+	// Get check interval from .env
+	checkIntervalSeconds, err := strconv.Atoi(os.Getenv("CHECK_INTERVAL_SECONDS"))
+	if err != nil {
+		log.Printf("Error parsing CHECK_INTERVAL_SECONDS, using default of 60 seconds: %v", err)
+		checkIntervalSeconds = 60
+	}
+
 	return &Monitor{
 		URL:               url,
 		Status:            true,
