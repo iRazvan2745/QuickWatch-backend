@@ -58,7 +58,8 @@ QuickWatch-backend is a robust URL monitoring service that checks the availabili
 
 ## API Endpoints
 
-- `GET /status`: Returns the current status of all monitored URLs
+- `GET /api/monitor`: Returns the current status of all monitored URLs
+- `POST /api/monitor/add`: Adds a new URL to be monitored
 - `GET /health`: Health check endpoint
 
 For more detailed API documentation, please refer to the API specification document.

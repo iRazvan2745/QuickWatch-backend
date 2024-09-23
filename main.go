@@ -35,14 +35,17 @@ type Config struct {
 }
 
 func main() {
+	fmt.Printf("Starting monitoring server...\n")
 	config, err := loadConfig()
 	if err != nil {
 		log.Fatalf("Error loading configuration: %v", err)
 	}
+	fmt.Println("Config Loaded!")
 
 	if err := setupLogging(config.LogFile); err != nil {
 		log.Fatalf("Error setting up logging: %v", err)
 	}
+	fmt.Println("Logging Loaded!")
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -109,7 +112,7 @@ func alertFunc(ctx context.Context, message, webhookURL string) error {
 
 func sendDiscordWebhook(ctx context.Context, message, webhookURL string) error {
 	if webhookURL == "" {
-		return fmt.Errorf("Discord webhook URL not set")
+		return fmt.Errorf("discord webhook URL not set")
 	}
 
 	payload := map[string]string{"content": message}
@@ -141,9 +144,9 @@ func sendDiscordWebhook(ctx context.Context, message, webhookURL string) error {
 
 func loadConfig() (*Config, error) {
 	return &Config{
-		URLs:            []string{"https://examplsfsdfsfgtse.com", "https://sgfg.com"},
+		URLs:            []string{"https://example.com", "https://another-example.com"},
 		CheckInterval:   10 * time.Second,
-		WebhookURL:      "https://discord.com/api/webhooks/1270238182935629947/l6rx-Yybi5SedNwa05B_p88njbeBM-UiQ1wEiR8cO3aq-EUae6DI2pfHEJYGm6K99suE",
+		WebhookURL:      os.Getenv("DISCORD_WEBHOOK_URL"),
 		LogFile:         "monitoring.log",
 		RetryAttempts:   3,
 		RetryDelay:      5 * time.Second,
@@ -199,7 +202,39 @@ func startHealthCheckServer(ctx context.Context, addr string) error {
 func startAPIServer(ctx context.Context, monitors []*Monitor, addr string, limiter *rate.Limiter, config *Config) error {
 	mux := http.NewServeMux()
 
-	// ... existing /api/monitor handler ...
+	mux.HandleFunc("/api/monitor", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		w.Header().Set("Access-Control-Allow-Origin", "*") // Add this line
+
+		type MonitorStatus struct {
+			URL          string  `json:"url"`
+			Status       bool    `json:"status"`
+			StatusCode   int     `json:"status_code"`
+			ResponseTime float64 `json:"response_time"`
+			LastChecked  string  `json:"last_checked"`
+		}
+
+		statuses := make([]MonitorStatus, len(monitors))
+		for i, monitor := range monitors {
+			monitor.mu.Lock()
+			status := MonitorStatus{
+				URL:          monitor.URL,
+				Status:       monitor.Status,
+				StatusCode:   monitor.LastStatusCode,
+				ResponseTime: monitor.LastResponseTime.Seconds() * 1000, // Convert to milliseconds
+				LastChecked:  monitor.LastChecked.Format(time.RFC3339),
+			}
+			statuses[i] = status
+			monitor.mu.Unlock()
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(statuses)
+	})
 
 	mux.HandleFunc("/api/monitor/add", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -233,6 +268,72 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, addr string, limit
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		json.NewEncoder(w).Encode(map[string]string{"message": "Site added successfully"})
+	})
+
+	mux.HandleFunc("/api/chart", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		type ChartData struct {
+			Name     string  `json:"name"`
+			Uptime   float64 `json:"uptime"`
+			Downtime float64 `json:"downtime"`
+		}
+
+		// Calculate uptime and downtime percentages
+		chartData := make([]ChartData, len(monitors))
+		for i, monitor := range monitors {
+			monitor.mu.Lock()
+			totalChecks := monitor.UptimeCount + monitor.DowntimeCount
+			uptimePercentage := 0.0
+			downtimePercentage := 0.0
+			if totalChecks > 0 {
+				uptimePercentage = (float64(monitor.UptimeCount) / float64(totalChecks)) * 100
+				downtimePercentage = (float64(monitor.DowntimeCount) / float64(totalChecks)) * 100
+			}
+			chartData[i] = ChartData{
+				Name:     monitor.URL,
+				Uptime:   uptimePercentage,
+				Downtime: downtimePercentage,
+			}
+			monitor.mu.Unlock()
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(chartData)
+	})
+
+	mux.HandleFunc("/api/monitor/history", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		url := r.URL.Query().Get("url")
+		if url == "" {
+			http.Error(w, "URL parameter is required", http.StatusBadRequest)
+			return
+		}
+
+		var history []string
+		for _, monitor := range monitors {
+			if monitor.URL == url {
+				history = monitor.GetHistory()
+				break
+			}
+		}
+
+		if history == nil {
+			http.Error(w, "Monitor not found", http.StatusNotFound)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(history)
 	})
 
 	server := &http.Server{

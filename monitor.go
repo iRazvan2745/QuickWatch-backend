@@ -1,4 +1,3 @@
-// Start of Selection
 package main
 
 import (
@@ -14,6 +13,9 @@ import (
 type Monitor struct {
 	URL               string
 	Status            bool
+	LastStatusCode    int
+	LastResponseTime  time.Duration
+	LastChecked       time.Time
 	History           []string
 	mu                sync.Mutex // Mutex to protect shared data
 	CheckInterval     time.Duration
@@ -21,6 +23,8 @@ type Monitor struct {
 	Client            *http.Client
 	Retries           int
 	RetryDelay        time.Duration
+	UptimeCount       int
+	DowntimeCount     int
 }
 
 func NewMonitor(url string, checkIntervalSeconds int, maxHistory int, retries int, retryDelay time.Duration, client *http.Client) *Monitor {
@@ -120,6 +124,16 @@ func (m *Monitor) Run(ctx context.Context, alertFunc func(string)) {
 			m.mu.Lock()
 			previousStatus := m.Status
 			m.Status = status // This line is crucial
+			m.LastStatusCode = code
+			m.LastResponseTime = duration
+			m.LastChecked = time.Now()
+
+			if status {
+				m.UptimeCount++
+			} else {
+				m.DowntimeCount++
+			}
+
 			m.mu.Unlock()
 
 			if status != previousStatus {
@@ -141,4 +155,11 @@ func (m *Monitor) Run(ctx context.Context, alertFunc func(string)) {
 			}
 		}
 	}
+}
+
+// GetHistory returns the history of the monitor.
+func (m *Monitor) GetHistory() []string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.History
 }
