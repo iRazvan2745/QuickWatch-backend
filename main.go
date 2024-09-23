@@ -197,8 +197,6 @@ func loadConfig() (*Config, error) {
 		RateLimit:         rate.Limit(1),
 		RateBurst:         5,
 		HealthCheckPort:   ":8081",
-		TLSCertFile:       "/etc/letsencrypt/live/qwapi.irazz.lol/fullchain.pem",
-		TLSKeyFile:        "/etc/letsencrypt/live/qwapi.irazz.lol/privkey.pem",
 		APIHost:           apiHost,
 		APIPort:           apiPort,
 		MaxHistoryEntries: 100,
@@ -394,8 +392,8 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, config *Config, li
 		}
 	}()
 
-	log.Printf("Starting API server on https://%s:%s", config.APIHost, config.APIPort)
-	if err := server.ListenAndServeTLS(config.TLSCertFile, config.TLSKeyFile); err != nil && err != http.ErrServerClosed {
+	log.Printf("Starting API server on http://%s:%s", config.APIHost, config.APIPort)
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		return fmt.Errorf("API server error: %w", err)
 	}
 

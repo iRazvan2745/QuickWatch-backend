@@ -123,6 +123,44 @@ func (m *Monitor) AddToHistory(status string, code int, duration time.Duration) 
 
 // Run starts the monitoring loop, checking the URL at each interval and triggering alerts as needed.
 func (m *Monitor) Run(ctx context.Context, alertFunc func(string)) {
+	// Initial check on launch
+	checkCtx, cancel := context.WithTimeout(ctx, m.CheckInterval)
+	status, code, duration := m.Check(checkCtx)
+	cancel()
+
+	m.mu.Lock()
+	previousStatus := m.Status
+	m.Status = status
+	m.LastStatusCode = code
+	m.LastResponseTime = duration
+	m.LastChecked = time.Now()
+
+	if status {
+		m.UptimeCount++
+	} else {
+		m.DowntimeCount++
+	}
+
+	m.mu.Unlock()
+
+	if status != previousStatus {
+		if !status {
+			alertFunc(fmt.Sprintf("ALERT: %s is down! (HTTP Code: %d)", m.URL, code))
+			m.AddToHistory("DOWN", code, duration)
+		} else {
+			alertFunc(fmt.Sprintf("INFO: %s is back up! (HTTP Code: %d)", m.URL, code))
+			m.AddToHistory("UP", code, duration)
+		}
+	} else {
+		if status {
+			alertFunc(fmt.Sprintf("INFO: %s is up! (HTTP Code: %d, Response Time: %v)", m.URL, code, duration))
+			m.AddToHistory("UP", code, duration)
+		} else {
+			alertFunc(fmt.Sprintf("ALERT: %s is still down! (HTTP Code: %d)", m.URL, code))
+			m.AddToHistory("DOWN", code, duration)
+		}
+	}
+
 	ticker := time.NewTicker(m.CheckInterval)
 	defer ticker.Stop() // Ensure the ticker is stopped when Run exits
 
