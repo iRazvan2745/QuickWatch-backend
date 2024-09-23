@@ -55,8 +55,8 @@ func NewMonitor(url string, maxHistory int, retries int, retryDelay time.Duratio
 	}
 }
 
-// Check performs an HTTP GET request to the monitor's URL with retries and measures response time.
-func (m *Monitor) Check(ctx context.Context) (bool, int, time.Duration) {
+// Improved Check method with context cancellation handling
+func (m *Monitor) Check(ctx context.Context) (bool, int, time.Duration, error) {
 	var (
 		status     bool
 		statusCode int
@@ -67,8 +67,7 @@ func (m *Monitor) Check(ctx context.Context) (bool, int, time.Duration) {
 		start := time.Now()
 		req, err := http.NewRequestWithContext(ctx, "GET", m.URL, nil)
 		if err != nil {
-			log.Printf("Error creating request for URL %s: %v", m.URL, err)
-			return false, 0, 0
+			return false, 0, 0, fmt.Errorf("creating request: %w", err)
 		}
 
 		resp, err := m.Client.Do(req)
@@ -84,15 +83,19 @@ func (m *Monitor) Check(ctx context.Context) (bool, int, time.Duration) {
 		}
 
 		if status {
-			return status, statusCode, duration
+			return status, statusCode, duration, nil
 		}
 
 		if attempt < m.Retries {
-			time.Sleep(m.RetryDelay)
+			select {
+			case <-ctx.Done():
+				return false, 0, 0, ctx.Err()
+			case <-time.After(m.RetryDelay):
+			}
 		}
 	}
 
-	return status, statusCode, duration
+	return status, statusCode, duration, nil
 }
 
 // AddToHistory adds a new entry to the monitor's history, maintaining the maximum history size.
@@ -121,12 +124,32 @@ func (m *Monitor) AddToHistory(status string, code int, duration time.Duration) 
 	}
 }
 
-// Run starts the monitoring loop, checking the URL at each interval and triggering alerts as needed.
+// Run method with enhanced context and error handling
 func (m *Monitor) Run(ctx context.Context, alertFunc func(string)) {
 	// Initial check on launch
-	checkCtx, cancel := context.WithTimeout(ctx, m.CheckInterval)
-	status, code, duration := m.Check(checkCtx)
-	cancel()
+	m.performCheck(ctx, alertFunc)
+
+	ticker := time.NewTicker(m.CheckInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			log.Printf("Stopping monitor for URL: %s", m.URL)
+			return
+		case <-ticker.C:
+			m.performCheck(ctx, alertFunc)
+		}
+	}
+}
+
+// Extracted performCheck for cleaner Run method
+func (m *Monitor) performCheck(ctx context.Context, alertFunc func(string)) {
+	status, code, duration, err := m.Check(ctx)
+	if err != nil {
+		log.Printf("Check failed for URL %s: %v", m.URL, err)
+		return
+	}
 
 	m.mu.Lock()
 	previousStatus := m.Status
@@ -140,7 +163,6 @@ func (m *Monitor) Run(ctx context.Context, alertFunc func(string)) {
 	} else {
 		m.DowntimeCount++
 	}
-
 	m.mu.Unlock()
 
 	if status != previousStatus {
@@ -158,54 +180,6 @@ func (m *Monitor) Run(ctx context.Context, alertFunc func(string)) {
 		} else {
 			alertFunc(fmt.Sprintf("ALERT: %s is still down! (HTTP Code: %d)", m.URL, code))
 			m.AddToHistory("DOWN", code, duration)
-		}
-	}
-
-	ticker := time.NewTicker(m.CheckInterval)
-	defer ticker.Stop() // Ensure the ticker is stopped when Run exits
-
-	for {
-		select {
-		case <-ctx.Done():
-			log.Printf("Stopping monitor for URL: %s", m.URL)
-			return
-		case <-ticker.C:
-			checkCtx, cancel := context.WithTimeout(ctx, m.CheckInterval)
-			status, code, duration := m.Check(checkCtx)
-			cancel()
-
-			m.mu.Lock()
-			previousStatus := m.Status
-			m.Status = status // This line is crucial
-			m.LastStatusCode = code
-			m.LastResponseTime = duration
-			m.LastChecked = time.Now()
-
-			if status {
-				m.UptimeCount++
-			} else {
-				m.DowntimeCount++
-			}
-
-			m.mu.Unlock()
-
-			if status != previousStatus {
-				if !status {
-					alertFunc(fmt.Sprintf("ALERT: %s is down! (HTTP Code: %d)", m.URL, code))
-					m.AddToHistory("DOWN", code, duration)
-				} else {
-					alertFunc(fmt.Sprintf("INFO: %s is back up! (HTTP Code: %d)", m.URL, code))
-					m.AddToHistory("UP", code, duration)
-				}
-			} else {
-				if status {
-					alertFunc(fmt.Sprintf("INFO: %s is up! (HTTP Code: %d, Response Time: %v)", m.URL, code, duration))
-					m.AddToHistory("UP", code, duration)
-				} else {
-					alertFunc(fmt.Sprintf("ALERT: %s is still down! (HTTP Code: %d)", m.URL, code))
-					m.AddToHistory("DOWN", code, duration)
-				}
-			}
 		}
 	}
 }

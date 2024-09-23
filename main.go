@@ -120,8 +120,8 @@ func main() {
 func generateEnvFile() error {
 	envContent := `CHECK_INTERVAL_SECONDS=60
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your-webhook-id
-API_HOST=qwapi.irazz.lol
-API_PORT=443
+API_HOST=0.0.0.0
+API_PORT=8080
 `
 	file, err := os.Create(".env")
 	if err != nil {
@@ -244,7 +244,36 @@ func startHealthCheckServer(ctx context.Context, addr string) error {
 func startAPIServer(ctx context.Context, monitors []*Monitor, config *Config, limiter *rate.Limiter) error {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/api/monitor", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/monitor", getMonitorStatusHandler(monitors))
+	mux.HandleFunc("/api/monitor/add", addMonitorHandler(ctx, monitors, config, limiter))
+	mux.HandleFunc("/api/chart", getChartDataHandler(monitors))
+	mux.HandleFunc("/api/monitor/history", getMonitorHistoryHandler(monitors))
+
+	server := &http.Server{
+		Addr:    config.APIHost + ":" + config.APIPort,
+		Handler: mux,
+	}
+
+	go func() {
+		<-ctx.Done()
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := server.Shutdown(shutdownCtx); err != nil {
+			log.Printf("Error shutting down API server: %v", err)
+		}
+	}()
+
+	log.Printf("Starting API server on http://%s:%s", config.APIHost, config.APIPort)
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		return fmt.Errorf("API server error: %w", err)
+	}
+
+	return nil
+}
+
+// Handler for GET /api/monitor
+func getMonitorStatusHandler(monitors []*Monitor) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -256,7 +285,7 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, config *Config, li
 			URL          string  `json:"url"`
 			Status       bool    `json:"status"`
 			StatusCode   int     `json:"status_code"`
-			ResponseTime float64 `json:"response_time"`
+			ResponseTime float64 `json:"response_time"` // in milliseconds
 			LastChecked  string  `json:"last_checked"`
 		}
 
@@ -276,9 +305,12 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, config *Config, li
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(statuses)
-	})
+	}
+}
 
-	mux.HandleFunc("/api/monitor/add", func(w http.ResponseWriter, r *http.Request) {
+// Handler for POST /api/monitor/add
+func addMonitorHandler(ctx context.Context, monitors []*Monitor, config *Config, limiter *rate.Limiter) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -288,11 +320,24 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, config *Config, li
 			URL string `json:"url"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
 
-		// Create a new monitor for the added URL
+		if data.URL == "" {
+			http.Error(w, "URL is required", http.StatusBadRequest)
+			return
+		}
+
+		// Check if monitor already exists
+		for _, monitor := range monitors {
+			if monitor.URL == data.URL {
+				http.Error(w, "Monitor already exists", http.StatusConflict)
+				return
+			}
+		}
+
+		// Create and add new monitor
 		newMonitor := NewMonitor(data.URL, config.MaxHistoryEntries, config.RetryAttempts, config.RetryDelay, &http.Client{Timeout: config.Timeout})
 		monitors = append(monitors, newMonitor)
 
@@ -310,9 +355,12 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, config *Config, li
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		json.NewEncoder(w).Encode(map[string]string{"message": "Site added successfully"})
-	})
+	}
+}
 
-	mux.HandleFunc("/api/chart", func(w http.ResponseWriter, r *http.Request) {
+// Handler for GET /api/chart
+func getChartDataHandler(monitors []*Monitor) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -326,7 +374,6 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, config *Config, li
 			Downtime float64 `json:"downtime"`
 		}
 
-		// Calculate uptime and downtime percentages
 		chartData := make([]ChartData, len(monitors))
 		for i, monitor := range monitors {
 			monitor.mu.Lock()
@@ -347,13 +394,18 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, config *Config, li
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(chartData)
-	})
+	}
+}
 
-	mux.HandleFunc("/api/monitor/history", func(w http.ResponseWriter, r *http.Request) {
+// Handler for GET /api/monitor/history
+func getMonitorHistoryHandler(monitors []*Monitor) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
+
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		url := r.URL.Query().Get("url")
 		if url == "" {
@@ -376,26 +428,5 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, config *Config, li
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(history)
-	})
-
-	server := &http.Server{
-		Addr:    config.APIHost + ":" + config.APIPort,
-		Handler: mux,
 	}
-
-	go func() {
-		<-ctx.Done()
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		if err := server.Shutdown(shutdownCtx); err != nil {
-			log.Printf("Error shutting down API server: %v", err)
-		}
-	}()
-
-	log.Printf("Starting API server on http://%s:%s", config.APIHost, config.APIPort)
-	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		return fmt.Errorf("API server error: %w", err)
-	}
-
-	return nil
 }
