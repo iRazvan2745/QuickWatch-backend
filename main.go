@@ -33,6 +33,7 @@ type Config struct {
 	HealthCheckPort   string        `json:"health_check_port"`
 	TLSCertFile       string        `json:"tls_cert_file"`
 	TLSKeyFile        string        `json:"tls_key_file"`
+	APIHost           string        `json:"api_host"`
 	APIPort           string        `json:"api_port"`
 	MaxHistoryEntries int           `json:"max_history_entries"`
 }
@@ -96,7 +97,7 @@ func main() {
 	}
 
 	g.Go(func() error {
-		return startAPIServer(ctx, monitors, config.APIPort, limiter, config)
+		return startAPIServer(ctx, monitors, config, limiter)
 	})
 
 	log.Println("Monitoring started...")
@@ -119,6 +120,8 @@ func main() {
 func generateEnvFile() error {
 	envContent := `CHECK_INTERVAL_SECONDS=60
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your-webhook-id
+API_HOST=qwapi.irazz.lol
+API_PORT=443
 `
 	file, err := os.Create(".env")
 	if err != nil {
@@ -179,6 +182,9 @@ func loadConfig() (*Config, error) {
 		return nil, fmt.Errorf("invalid CHECK_INTERVAL_SECONDS: %w", err)
 	}
 
+	apiHost := os.Getenv("API_HOST")
+	apiPort := os.Getenv("API_PORT")
+
 	return &Config{
 		URLs:              []string{"https://example.com", "https://another-example.com"},
 		CheckInterval:     time.Duration(checkInterval) * time.Second,
@@ -191,9 +197,10 @@ func loadConfig() (*Config, error) {
 		RateLimit:         rate.Limit(1),
 		RateBurst:         5,
 		HealthCheckPort:   ":8081",
-		TLSCertFile:       "server.crt",
-		TLSKeyFile:        "server.key",
-		APIPort:           ":8080",
+		TLSCertFile:       "/etc/letsencrypt/live/qwapi.irazz.lol/fullchain.pem",
+		TLSKeyFile:        "/etc/letsencrypt/live/qwapi.irazz.lol/privkey.pem",
+		APIHost:           apiHost,
+		APIPort:           apiPort,
 		MaxHistoryEntries: 100,
 	}, nil
 }
@@ -236,7 +243,7 @@ func startHealthCheckServer(ctx context.Context, addr string) error {
 	return nil
 }
 
-func startAPIServer(ctx context.Context, monitors []*Monitor, addr string, limiter *rate.Limiter, config *Config) error {
+func startAPIServer(ctx context.Context, monitors []*Monitor, config *Config, limiter *rate.Limiter) error {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/api/monitor", func(w http.ResponseWriter, r *http.Request) {
@@ -374,7 +381,7 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, addr string, limit
 	})
 
 	server := &http.Server{
-		Addr:    addr,
+		Addr:    config.APIHost + ":" + config.APIPort,
 		Handler: mux,
 	}
 
@@ -387,8 +394,8 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, addr string, limit
 		}
 	}()
 
-	log.Printf("Starting API server on %s", addr)
-	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	log.Printf("Starting API server on https://%s:%s", config.APIHost, config.APIPort)
+	if err := server.ListenAndServeTLS(config.TLSCertFile, config.TLSKeyFile); err != nil && err != http.ErrServerClosed {
 		return fmt.Errorf("API server error: %w", err)
 	}
 
