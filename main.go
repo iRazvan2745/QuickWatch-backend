@@ -38,6 +38,11 @@ type Config struct {
 }
 
 func main() {
+	// Generate .env file
+	if err := generateEnvFile(); err != nil {
+		log.Fatalf("Error generating .env file: %v", err)
+	}
+
 	// Load .env file
 	if err := godotenv.Load(); err != nil {
 		log.Printf("Error loading .env file: %v", err)
@@ -109,6 +114,23 @@ func main() {
 	}
 
 	log.Println("Monitoring stopped.")
+}
+
+func generateEnvFile() error {
+	envContent := `CHECK_INTERVAL_SECONDS=60
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your-webhook-id
+`
+	file, err := os.Create(".env")
+	if err != nil {
+		return fmt.Errorf("error creating .env file: %w", err)
+	}
+	defer file.Close()
+
+	if _, err := file.WriteString(envContent); err != nil {
+		return fmt.Errorf("error writing to .env file: %w", err)
+	}
+
+	return nil
 }
 
 func alertFunc(ctx context.Context, message, webhookURL string) error {
