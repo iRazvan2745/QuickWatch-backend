@@ -28,6 +28,12 @@ type Monitor struct {
 	RetryDelay        time.Duration
 	UptimeCount       int
 	DowntimeCount     int
+	UptimeHistory     []UptimeRecord
+}
+
+type UptimeRecord struct {
+	Timestamp time.Time
+	IsUp      bool
 }
 
 func NewMonitor(url string, maxHistory int, retries int, retryDelay time.Duration, client *http.Client) *Monitor {
@@ -163,22 +169,37 @@ func (m *Monitor) performCheck(ctx context.Context, alertFunc func(string)) {
 	} else {
 		m.DowntimeCount++
 	}
+
+	m.UptimeHistory = append(m.UptimeHistory, UptimeRecord{
+		Timestamp: time.Now(),
+		IsUp:      status,
+	})
+
+	// Keep only the last 30 days of history
+	thirtyDaysAgo := time.Now().AddDate(0, 0, -30)
+	for len(m.UptimeHistory) > 0 && m.UptimeHistory[0].Timestamp.Before(thirtyDaysAgo) {
+		m.UptimeHistory = m.UptimeHistory[1:]
+	}
 	m.mu.Unlock()
 
 	if status != previousStatus {
 		if !status {
 			alertFunc(fmt.Sprintf("ALERT: %s is down! (HTTP Code: %d)", m.URL, code))
+			//fmt.Printf("ALERT: %s is down! (HTTP Code: %d)", m.URL, code)
 			m.AddToHistory("DOWN", code, duration)
 		} else {
 			alertFunc(fmt.Sprintf("INFO: %s is back up! (HTTP Code: %d)", m.URL, code))
+			fmt.Printf("INFO: %s is back up! (HTTP Code: %d)", m.URL, code)
 			m.AddToHistory("UP", code, duration)
 		}
 	} else {
 		if status {
 			alertFunc(fmt.Sprintf("INFO: %s is up! (HTTP Code: %d, Response Time: %v)", m.URL, code, duration))
+			//fmt.Printf("INFO: %s is up! (HTTP Code: %d, Response Time: %v)", m.URL, code, duration)
 			m.AddToHistory("UP", code, duration)
 		} else {
 			alertFunc(fmt.Sprintf("ALERT: %s is still down! (HTTP Code: %d)", m.URL, code))
+			//fmt.Printf("ALERT: %s is still down! (HTTP Code: %d)", m.URL, code)
 			m.AddToHistory("DOWN", code, duration)
 		}
 	}

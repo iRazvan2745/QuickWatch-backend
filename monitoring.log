@@ -13983,3 +13983,273 @@
 2024/09/21 20:04:11 Rate limit error: context canceled
 2024/09/21 20:04:11 Stopping monitor for URL: https://another-example.com
 2024/09/21 20:04:11 Monitoring stopped.
+2024/09/24 00:03:48 Monitoring started...
+2024/09/24 00:03:48 Starting API server on http://0.0.0.0:8080
+2024/09/24 00:03:48 Starting health check server on :8081
+2024/09/24 00:03:48 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:03:48 2024-09-24T00:03:48+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 482.988685ms)
+2024/09/24 00:03:48 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:03:53 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:03:58 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:04:03 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:04:03 2024-09-24T00:04:03+03:00 ALERT: https://another-example.com is down! (HTTP Code: 0)
+2024/09/24 00:04:03 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:04:48 2024-09-24T00:04:48+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 118.713796ms)
+2024/09/24 00:04:49 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:05:03 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:05:08 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:05:13 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:05:18 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:05:18 2024-09-24T00:05:18+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:05:18 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:05:48 2024-09-24T00:05:48+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 118.428201ms)
+2024/09/24 00:05:49 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:06:03 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:06:08 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:06:13 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:06:18 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:06:18 2024-09-24T00:06:18+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:06:18 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:06:48 2024-09-24T00:06:48+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 112.538399ms)
+2024/09/24 00:06:49 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:07:03 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:07:08 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:07:13 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:07:18 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:07:18 2024-09-24T00:07:18+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:07:18 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:07:48 2024-09-24T00:07:48+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 118.785219ms)
+2024/09/24 00:07:49 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:08:03 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:08:08 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:08:13 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:08:18 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:08:18 2024-09-24T00:08:18+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:08:18 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:08:48 2024-09-24T00:08:48+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 117.430584ms)
+2024/09/24 00:08:49 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:09:03 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:09:08 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:09:13 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:09:18 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:09:18 2024-09-24T00:09:18+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:09:18 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:09:48 2024-09-24T00:09:48+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 113.001745ms)
+2024/09/24 00:09:49 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:10:03 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:10:08 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:10:13 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:10:18 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:10:18 2024-09-24T00:10:18+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:10:18 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:10:48 2024-09-24T00:10:48+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 137.240249ms)
+2024/09/24 00:10:49 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:10:58 Shutdown signal received. Stopping monitors...
+2024/09/24 00:10:58 Stopping monitor for URL: https://another-example.com
+2024/09/24 00:10:58 Stopping monitor for URL: https://example.com
+2024/09/24 00:10:58 Monitoring stopped.
+2024/09/24 00:11:00 Starting health check server on :8081
+2024/09/24 00:11:00 Monitoring started...
+2024/09/24 00:11:00 Starting API server on http://0.0.0.0:8080
+2024/09/24 00:11:00 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:11:01 2024-09-24T00:11:01+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 500.709928ms)
+2024/09/24 00:11:01 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:11:05 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:11:10 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:11:15 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:11:15 2024-09-24T00:11:15+03:00 ALERT: https://another-example.com is down! (HTTP Code: 0)
+2024/09/24 00:11:15 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:12:01 2024-09-24T00:12:01+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 115.81016ms)
+2024/09/24 00:12:01 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:12:15 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:12:20 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:12:25 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:12:30 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:12:30 2024-09-24T00:12:30+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:12:31 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:13:01 2024-09-24T00:13:01+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 115.209629ms)
+2024/09/24 00:13:01 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:13:15 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:13:20 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:13:25 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:13:30 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:13:30 2024-09-24T00:13:30+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:13:31 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:14:01 2024-09-24T00:14:01+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 120.235073ms)
+2024/09/24 00:14:01 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:14:15 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:14:20 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:14:23 Shutdown signal received. Stopping monitors...
+2024/09/24 00:14:23 Stopping monitor for URL: https://example.com
+2024/09/24 00:14:23 Check failed for URL https://another-example.com: context canceled
+2024/09/24 00:14:23 Stopping monitor for URL: https://another-example.com
+2024/09/24 00:14:23 Monitoring stopped.
+2024/09/24 00:14:24 Monitoring started...
+2024/09/24 00:14:24 Starting health check server on :8081
+2024/09/24 00:14:24 Starting API server on http://0.0.0.0:8080
+2024/09/24 00:14:24 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:14:24 2024-09-24T00:14:24+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 523.058813ms)
+2024/09/24 00:14:25 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:14:29 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:14:34 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:14:39 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:14:39 2024-09-24T00:14:39+03:00 ALERT: https://another-example.com is down! (HTTP Code: 0)
+2024/09/24 00:14:39 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:15:25 2024-09-24T00:15:25+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 127.328746ms)
+2024/09/24 00:15:25 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:15:39 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:15:44 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:15:49 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:15:54 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:15:54 2024-09-24T00:15:54+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:15:54 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:16:25 2024-09-24T00:16:25+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 123.139629ms)
+2024/09/24 00:16:25 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:16:39 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:16:44 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:16:49 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:16:54 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:16:54 2024-09-24T00:16:54+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:16:54 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:17:19 Shutdown signal received. Stopping monitors...
+2024/09/24 00:17:19 Stopping monitor for URL: https://example.com
+2024/09/24 00:17:19 Stopping monitor for URL: https://another-example.com
+2024/09/24 00:17:19 Monitoring stopped.
+2024/09/24 00:17:20 Monitoring started...
+2024/09/24 00:17:20 Starting health check server on :8081
+2024/09/24 00:17:20 Starting API server on http://0.0.0.0:8080
+2024/09/24 00:17:20 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:17:20 2024-09-24T00:17:20+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 516.684258ms)
+2024/09/24 00:17:21 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:17:25 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:17:30 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:17:35 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:17:35 2024-09-24T00:17:35+03:00 ALERT: https://another-example.com is down! (HTTP Code: 0)
+2024/09/24 00:17:35 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:18:21 2024-09-24T00:18:21+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 121.707616ms)
+2024/09/24 00:18:21 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:18:35 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:18:40 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:18:45 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:18:50 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:18:50 2024-09-24T00:18:50+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:18:50 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:19:21 2024-09-24T00:19:21+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 137.901972ms)
+2024/09/24 00:19:21 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:19:35 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:19:40 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:19:45 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:19:50 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:19:50 2024-09-24T00:19:50+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:19:50 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:20:21 2024-09-24T00:20:21+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 132.284612ms)
+2024/09/24 00:20:21 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:20:35 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:20:40 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:20:45 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:20:50 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:20:50 2024-09-24T00:20:50+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:20:50 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:21:21 2024-09-24T00:21:21+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 129.392012ms)
+2024/09/24 00:21:21 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:21:35 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:21:40 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:21:45 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:21:50 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:21:50 2024-09-24T00:21:50+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:21:50 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:22:21 2024-09-24T00:22:21+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 129.424044ms)
+2024/09/24 00:22:21 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:22:35 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:22:40 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:22:45 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:22:50 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 00:22:50 2024-09-24T00:22:50+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 00:22:50 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:23:21 2024-09-24T00:23:21+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 156.978614ms)
+2024/09/24 00:23:21 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 00:23:28 Shutdown signal received. Stopping monitors...
+2024/09/24 00:23:28 Stopping monitor for URL: https://another-example.com
+2024/09/24 00:23:28 Stopping monitor for URL: https://example.com
+2024/09/24 00:23:28 Monitoring stopped.
+2024/09/24 22:39:31 Monitoring started...
+2024/09/24 22:39:31 Starting health check server on :8081
+2024/09/24 22:39:31 Starting API server on http://0.0.0.0:8080
+2024/09/24 22:39:31 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:39:31 2024-09-24T22:39:31+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 537.567468ms)
+2024/09/24 22:39:31 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:39:33 Shutdown signal received. Stopping monitors...
+2024/09/24 22:39:33 Check failed for URL https://another-example.com: context canceled
+2024/09/24 22:39:33 Stopping monitor for URL: https://another-example.com
+2024/09/24 22:39:33 Stopping monitor for URL: https://example.com
+2024/09/24 22:39:33 Monitoring stopped.
+2024/09/24 22:42:04 Monitoring started...
+2024/09/24 22:42:04 Starting API server on http://0.0.0.0:8080
+2024/09/24 22:42:04 Starting health check server on :8081
+2024/09/24 22:42:04 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:42:05 2024-09-24T22:42:05+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 532.675173ms)
+2024/09/24 22:42:05 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:42:10 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:42:15 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:42:20 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:42:20 2024-09-24T22:42:20+03:00 ALERT: https://another-example.com is down! (HTTP Code: 0)
+2024/09/24 22:42:20 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:43:05 2024-09-24T22:43:05+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 118.97891ms)
+2024/09/24 22:43:05 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:43:20 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:43:25 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:43:30 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:43:35 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:43:35 2024-09-24T22:43:35+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 22:43:35 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:44:05 2024-09-24T22:44:05+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 119.925821ms)
+2024/09/24 22:44:06 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:44:20 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:44:25 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:44:30 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:44:35 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:44:35 2024-09-24T22:44:35+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 22:44:35 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:45:02 Shutdown signal received. Stopping monitors...
+2024/09/24 22:45:02 Stopping monitor for URL: https://example.com
+2024/09/24 22:45:02 Stopping monitor for URL: https://another-example.com
+2024/09/24 22:45:02 Monitoring stopped.
+2024/09/24 22:45:36 Monitoring started...
+2024/09/24 22:45:36 Starting API server on http://0.0.0.0:8080
+2024/09/24 22:45:36 Starting health check server on :8081
+2024/09/24 22:45:36 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:45:36 2024-09-24T22:45:36+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 573.279797ms)
+2024/09/24 22:45:36 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:45:41 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:45:46 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:45:51 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:45:51 2024-09-24T22:45:51+03:00 ALERT: https://another-example.com is down! (HTTP Code: 0)
+2024/09/24 22:45:51 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:46:37 2024-09-24T22:46:37+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 126.706106ms)
+2024/09/24 22:46:37 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:46:51 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:46:56 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:47:01 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:47:06 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:47:06 2024-09-24T22:47:06+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 22:47:06 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:47:37 2024-09-24T22:47:37+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 127.346258ms)
+2024/09/24 22:47:37 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:47:51 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:47:56 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:48:01 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:48:06 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:48:06 2024-09-24T22:48:06+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 22:48:06 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:48:37 2024-09-24T22:48:37+03:00 INFO: https://example.com is up! (HTTP Code: 200, Response Time: 122.085378ms)
+2024/09/24 22:48:37 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:48:51 Error checking URL https://another-example.com (attempt 1/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:48:56 Error checking URL https://another-example.com (attempt 2/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:49:01 Error checking URL https://another-example.com (attempt 3/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:49:06 Error checking URL https://another-example.com (attempt 4/4): Get "https://another-example.com": dial tcp: lookup another-example.com: no such host
+2024/09/24 22:49:06 2024-09-24T22:49:06+03:00 ALERT: https://another-example.com is still down! (HTTP Code: 0)
+2024/09/24 22:49:06 Error sending alert: unexpected status code from Discord: 405
+2024/09/24 22:49:32 Shutdown signal received. Stopping monitors...
+2024/09/24 22:49:32 Stopping monitor for URL: https://example.com
+2024/09/24 22:49:32 Stopping monitor for URL: https://another-example.com
+2024/09/24 22:49:32 Monitoring stopped.

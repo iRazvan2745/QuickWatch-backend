@@ -139,6 +139,7 @@ API_PORT=8080
 func alertFunc(ctx context.Context, message, webhookURL string) error {
 	timestamp := time.Now().Format(time.RFC3339)
 	log.Printf("%s %s", timestamp, message)
+	fmt.Printf("%s \n", message)
 
 	return sendDiscordWebhook(ctx, message, webhookURL)
 }
