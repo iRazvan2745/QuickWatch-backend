@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
@@ -29,6 +32,8 @@ type Monitor struct {
 	UptimeCount       int
 	DowntimeCount     int
 	UptimeHistory     []UptimeRecord
+	UptimePercentage  float64
+	UptimeFile        string
 }
 
 type UptimeRecord struct {
@@ -49,7 +54,7 @@ func NewMonitor(url string, maxHistory int, retries int, retryDelay time.Duratio
 		checkIntervalSeconds = 60
 	}
 
-	return &Monitor{
+	m := &Monitor{
 		URL:               url,
 		Status:            true,
 		History:           []string{},
@@ -58,7 +63,47 @@ func NewMonitor(url string, maxHistory int, retries int, retryDelay time.Duratio
 		Client:            client,
 		Retries:           retries,
 		RetryDelay:        retryDelay,
+		UptimeFile:        filepath.Join("uptime", url+".json"),
 	}
+
+	m.loadUptimeData()
+	return m
+}
+
+func (m *Monitor) loadUptimeData() {
+	data, err := ioutil.ReadFile(m.UptimeFile)
+	if err == nil {
+		var uptimeData struct {
+			UptimePercentage float64 `json:"uptime_percentage"`
+		}
+		if err := json.Unmarshal(data, &uptimeData); err == nil {
+			m.UptimePercentage = uptimeData.UptimePercentage
+		}
+	} else {
+		// If the file does not exist, create it with initial data
+		m.saveUptimeData()
+	}
+}
+
+func (m *Monitor) saveUptimeData() {
+	data, err := json.Marshal(struct {
+		UptimePercentage float64 `json:"uptime_percentage"`
+	}{
+		UptimePercentage: m.UptimePercentage,
+	})
+	if err == nil {
+		_ = ioutil.WriteFile(m.UptimeFile, data, 0644)
+	}
+}
+
+func (m *Monitor) updateUptimePercentage() {
+	totalChecks := m.UptimeCount + m.DowntimeCount
+	if totalChecks > 0 {
+		m.UptimePercentage = float64(m.UptimeCount) / float64(totalChecks) * 100
+	} else {
+		m.UptimePercentage = 0
+	}
+	m.saveUptimeData()
 }
 
 // Improved Check method with context cancellation handling
@@ -182,10 +227,11 @@ func (m *Monitor) performCheck(ctx context.Context, alertFunc func(string)) {
 	}
 	m.mu.Unlock()
 
+	m.updateUptimePercentage()
+
 	if status != previousStatus {
 		if !status {
 			alertFunc(fmt.Sprintf("ALERT: %s is down! (HTTP Code: %d)", m.URL, code))
-			//fmt.Printf("ALERT: %s is down! (HTTP Code: %d)", m.URL, code)
 			m.AddToHistory("DOWN", code, duration)
 		} else {
 			alertFunc(fmt.Sprintf("INFO: %s is back up! (HTTP Code: %d)", m.URL, code))
@@ -195,11 +241,9 @@ func (m *Monitor) performCheck(ctx context.Context, alertFunc func(string)) {
 	} else {
 		if status {
 			alertFunc(fmt.Sprintf("INFO: %s is up! (HTTP Code: %d, Response Time: %v)", m.URL, code, duration))
-			//fmt.Printf("INFO: %s is up! (HTTP Code: %d, Response Time: %v)", m.URL, code, duration)
 			m.AddToHistory("UP", code, duration)
 		} else {
 			alertFunc(fmt.Sprintf("ALERT: %s is still down! (HTTP Code: %d)", m.URL, code))
-			//fmt.Printf("ALERT: %s is still down! (HTTP Code: %d)", m.URL, code)
 			m.AddToHistory("DOWN", code, duration)
 		}
 	}

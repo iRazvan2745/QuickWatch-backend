@@ -272,7 +272,17 @@ func startAPIServer(ctx context.Context, monitors []*Monitor, config *Config, li
 	return nil
 }
 
-// Handler for GET /api/monitor
+// Update the MonitorStatus struct
+type MonitorStatus struct {
+	URL              string  `json:"url"`
+	Status           bool    `json:"status"`
+	StatusCode       int     `json:"status_code"`
+	ResponseTime     float64 `json:"response_time"`
+	LastChecked      string  `json:"last_checked"`
+	UptimePercentage float64 `json:"uptime_percentage"`
+}
+
+// Update the getMonitorStatusHandler function
 func getMonitorStatusHandler(monitors []*Monitor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -282,23 +292,21 @@ func getMonitorStatusHandler(monitors []*Monitor) http.HandlerFunc {
 
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
-		type MonitorStatus struct {
-			URL          string  `json:"url"`
-			Status       bool    `json:"status"`
-			StatusCode   int     `json:"status_code"`
-			ResponseTime float64 `json:"response_time"` // in milliseconds
-			LastChecked  string  `json:"last_checked"`
-		}
-
 		statuses := make([]MonitorStatus, len(monitors))
 		for i, monitor := range monitors {
 			monitor.mu.Lock()
+			totalChecks := monitor.UptimeCount + monitor.DowntimeCount
+			uptimePercentage := 0.0
+			if totalChecks > 0 {
+				uptimePercentage = (float64(monitor.UptimeCount) / float64(totalChecks)) * 100
+			}
 			status := MonitorStatus{
-				URL:          monitor.URL,
-				Status:       monitor.Status,
-				StatusCode:   monitor.LastStatusCode,
-				ResponseTime: monitor.LastResponseTime.Seconds() * 1000, // Convert to milliseconds
-				LastChecked:  monitor.LastChecked.Format(time.RFC3339),
+				URL:              monitor.URL,
+				Status:           monitor.Status,
+				StatusCode:       monitor.LastStatusCode,
+				ResponseTime:     monitor.LastResponseTime.Seconds() * 1000,
+				LastChecked:      monitor.LastChecked.Format(time.RFC3339),
+				UptimePercentage: uptimePercentage,
 			}
 			statuses[i] = status
 			monitor.mu.Unlock()
